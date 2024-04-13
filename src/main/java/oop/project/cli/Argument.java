@@ -1,43 +1,54 @@
 package oop.project.cli;
 
+import java.lang.reflect.Constructor;
+
 public class Argument<T>
 {
     //Required
     String name;
-    Class<?> type;
+    Class<T> type;
 
     //Optional
     Boolean required;
     String helpMsg;
-    ValidationFunction<T> validationFunction;
+    ValidationFunction<Object> validationFunction;
 
     private Argument(){}
-    public Argument(String argName, Class<?> argType)
+    public Argument(String argName, Class<T> argType)
     {
         this.name = argName;
         this.type = argType;
         this.required = Boolean.TRUE;
+        this.helpMsg = "";
+        this.validationFunction = null;
     }
 
-//    public Boolean validate()
-//    {
-//
-//    }
+    public static <T> T convertStringToType(String value, Class<T> type) throws Exception {
+        Constructor<T> constructor = type.getConstructor(String.class);
+        return constructor.newInstance(value);
+    }
 
-    public void printHelp()
-    {
+    public T validate(String input) throws Exception {
+        T parsedInput = convertStringToType(input, type);
+
+        if (validationFunction.validate(parsedInput))
+        {
+            return parsedInput;
+        }
+
+        throw new Exception("Validation failed");
+    }
+
+    public void printHelp(){
         System.out.println(helpMsg);
     }
-    public void setRequired(Boolean required)
-    {
+    public void setRequired(Boolean required){
         this.required = required;
     }
-    public void setHelpMsg(String helpMsg)
-    {
+    public void setHelpMsg(String helpMsg){
         this.helpMsg = helpMsg;
     }
-    public void setValidationFunc(ValidationFunction<T> validationFunction)
-    {
+    public void setValidationFunc(ValidationFunction<Object> validationFunction){
         this.validationFunction = validationFunction;
     }
 }
