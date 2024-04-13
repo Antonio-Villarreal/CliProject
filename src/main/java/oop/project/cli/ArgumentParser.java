@@ -74,17 +74,21 @@ public class ArgumentParser {
             System.out.println();
         }
         System.out.println("Usage: " + identifier + " [ARGUMENTS] [COMMAND]");
-        System.out.println();
-        System.out.println("Arguments:");
-        for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
-            Argument argument = entry.getValue();
-            System.out.println(argument.printHelp());
+        if (!arguments.isEmpty()) {
+            System.out.println();
+            System.out.println("Arguments:");
+            for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
+                Argument argument = entry.getValue();
+                System.out.println(argument.printHelp());
+            }
         }
-        System.out.println();
-        System.out.println("Commands:");
-        for (Map.Entry<String, Command> entry : commands.entrySet()) {
-            Command command = entry.getValue();
-            command.printCompactHelpMessage();
+        if (!commands.isEmpty()) {
+            System.out.println();
+            System.out.println("Commands:");
+            for (Map.Entry<String, Command> entry : commands.entrySet()) {
+                Command command = entry.getValue();
+                command.printCompactHelpMessage();
+            }
         }
         System.out.println();
         System.out.println("Optional Arguments:");
