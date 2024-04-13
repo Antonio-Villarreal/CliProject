@@ -24,7 +24,7 @@ public class ArgumentParser {
     }
 
     public void addArgument(String name, Class<?> type) {
-        Argument newArgument = new Argument(name, type);
+        var newArgument = new Argument(name, type);
         arguments.put(name, newArgument);
     }
 
@@ -32,8 +32,8 @@ public class ArgumentParser {
         getArgument(name).setHelpMsg(description);
     }
 
-    public void updateArgumentValidator(String name, ValidatorFunction<?> validator) {
-        getArgument(name).setValidator(validator);
+    public void updateArgumentValidator(String name, ValidationFunction<?> validationFunction) {
+        getArgument(name).setValidationFunc(validationFunction);
     }
 
     public void updateArgumentRequired(String name, Boolean required) {
@@ -47,10 +47,6 @@ public class ArgumentParser {
         }
         return currArgument;
     }
-
-
-
-
 
 //    public ArgumentParser addCommand() {}
 //
