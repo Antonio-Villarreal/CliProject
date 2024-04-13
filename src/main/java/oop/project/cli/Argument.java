@@ -40,7 +40,7 @@ public class Argument<T>
         throw new Exception("Validation failed");
     }
 
-    public void printHelp() {
+    public String printHelp() {
         StringBuilder msg = new StringBuilder();
         msg.append("\t").append(name);
         msg.append("\tType: ").append(type.getSimpleName());
@@ -53,7 +53,7 @@ public class Argument<T>
         if (helpMsg != null && !helpMsg.isEmpty()) {
             msg.append(", MSG: ").append(helpMsg);
         }
-        System.out.println(msg.toString());
+        return msg.toString();
     }
     
     public void setRequired(Boolean required){
