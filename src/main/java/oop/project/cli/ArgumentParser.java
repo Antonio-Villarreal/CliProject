@@ -1,17 +1,63 @@
 package oop.project.cli;
 
 import java.util.Map;
+import java.util.LinkedHashMap;
 
 public class ArgumentParser {
-    public ArgumentParser() {}
+    String name;
+    String identifier;
+    String description;
 
-    public void addArgument() {}
-    public ArgumentParser addCommand() {}
+    Map<String, Argument> arguments = new LinkedHashMap<>();
 
-    public void parseArgs() {}
+    private ArgumentParser() {}
 
-    public Map<String, Object> getArgs() {}
+    public ArgumentParser(String name, String identifier) {
+        this.name = name;
+        this.identifier = identifier;
+    }
 
-    public Object getArg() {}
+    public ArgumentParser(String name, String identifier, String description) {
+        this.name = name;
+        this.identifier = identifier;
+        this.description = description;
+    }
+
+    public void addArgument(String name, Class<?> type) {
+        Argument newArgument = new Argument(name, type);
+        arguments.put(name, newArgument);
+    }
+
+    public void updateArgumentHelpMsg(String name, String description) {
+        getArgument(name).setHelpMsg(description);
+    }
+
+    public void updateArgumentValidator(String name, ValidatorFunction<?> validator) {
+        getArgument(name).setValidator(validator);
+    }
+
+    public void updateArgumentRequired(String name, Boolean required) {
+        getArgument(name).setRequired(required);
+    }
+
+    private Argument getArgument(String name) {
+        Argument currArgument = arguments.get(name);
+        if (currArgument == null) {
+            throw new IllegalArgumentException("Argument with name '" + name + "' not found.");
+        }
+        return currArgument;
+    }
+
+
+
+
+
+//    public ArgumentParser addCommand() {}
+//
+//    public void parseArgs() {}
+//
+//    public Map<String, Object> getArgs() {}
+//
+//    public Object getArg() {}
 
 }
