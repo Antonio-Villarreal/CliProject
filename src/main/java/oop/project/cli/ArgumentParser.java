@@ -9,6 +9,7 @@ public class ArgumentParser {
     String description;
 
     Map<String, Argument> arguments = new LinkedHashMap<>();
+    Map<String, Object> values = new LinkedHashMap<>();
 
     private ArgumentParser() {}
 
@@ -25,14 +26,14 @@ public class ArgumentParser {
 
     public void addArgument(String name, Class<?> type) {
         var newArgument = new Argument(name, type);
-        arguments.put(name, newArgument);
+        storeArgument(name, newArgument);
     }
 
     public void updateArgumentHelpMsg(String name, String description) {
         getArgument(name).setHelpMsg(description);
     }
 
-    public void updateArgumentValidator(String name, ValidationFunction<?> validationFunction) {
+    public void updateArgumentValidationFunc(String name, ValidationFunction<?> validationFunction) {
         getArgument(name).setValidationFunc(validationFunction);
     }
 
@@ -41,11 +42,31 @@ public class ArgumentParser {
     }
 
     private Argument getArgument(String name) {
-        Argument currArgument = arguments.get(name);
-        if (currArgument == null) {
+        if (arguments.containsKey(name)) {
             throw new IllegalArgumentException("Argument with name '" + name + "' not found.");
         }
-        return currArgument;
+        return arguments.get(name);
+    }
+
+    private Object getValue(String name) {
+        if (values.containsKey(name)) {
+            throw new IllegalArgumentException("Argument with name '" + name + "' not found.");
+        }
+        return values.get(name);
+    }
+
+    private void storeArgument(String name, Argument argument) {
+        if(arguments.containsKey(name)) {
+            throw new IllegalArgumentException("Argument with name '" + name + "' already exists.");
+        }
+        arguments.put(name, argument);
+    }
+
+    private void storeValue(String name, Object value) {
+        if(values.containsKey(name)) {
+            throw new IllegalArgumentException("Argument with name '" + name + "' already exists.");
+        }
+        values.put(name, value);
     }
 
 //    public ArgumentParser addCommand() {}
