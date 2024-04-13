@@ -50,7 +50,7 @@ public class ArgumentParser {
 
     private Object getValue(String name) {
         if (values.containsKey(name)) {
-            throw new IllegalArgumentException("Argument with name '" + name + "' not found.");
+            throw new IllegalArgumentException("Value with name '" + name + "' not found.");
         }
         return values.get(name);
     }
@@ -64,7 +64,7 @@ public class ArgumentParser {
 
     private void storeValue(String name, Object value) {
         if(values.containsKey(name)) {
-            throw new IllegalArgumentException("Argument with name '" + name + "' already exists.");
+            throw new IllegalArgumentException("Value with name '" + name + "' already exists.");
         }
         values.put(name, value);
     }
