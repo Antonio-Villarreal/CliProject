@@ -14,6 +14,7 @@ public class Argument<T>
     ValidationFunction<Object> validationFunction;
 
     private Argument(){}
+    
     public Argument(String argName, Class<T> argType)
     {
         this.name = argName;
@@ -39,15 +40,30 @@ public class Argument<T>
         throw new Exception("Validation failed");
     }
 
-    public void printHelp(){
-        System.out.println(helpMsg);
+    public void printHelp() {
+        StringBuilder msg = new StringBuilder();
+        msg.append("\t").append(name);
+        msg.append("\tType: ").append(type.getSimpleName());
+        if (required) {
+            msg.append(", Required: True");
+        } else {
+            msg.append(", Required: False");
+        }
+        
+        if (helpMsg != null && !helpMsg.isEmpty()) {
+            msg.append(", MSG: ").append(helpMsg);
+        }
+        System.out.println(msg.toString());
     }
+    
     public void setRequired(Boolean required){
         this.required = required;
     }
+    
     public void setHelpMsg(String helpMsg){
         this.helpMsg = helpMsg;
     }
+    
     public void setValidationFunc(ValidationFunction<Object> validationFunction){
         this.validationFunction = validationFunction;
     }
