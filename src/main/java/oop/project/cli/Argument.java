@@ -1,29 +1,28 @@
 package oop.project.cli;
 
-public class Argument
+public class Argument<T>
 {
     //Required
     String name;
-    Class<T> argType;
+    Class<?> type;
 
     //Optional
     Boolean required;
     String helpMsg;
-    ValidatorFunction<T, R> validatorFunction;
+    ValidationFunction<T> validationFunction;
 
     private Argument(){}
-    public Argument(String argName, Class<T> argType)
+    public Argument(String argName, Class<?> argType)
     {
-        name = argName;
-        this.argType = argType;
-
-        required = true;
+        this.name = argName;
+        this.type = argType;
+        this.required = Boolean.TRUE;
     }
 
-    public Boolean validate()
-    {
-
-    }
+//    public Boolean validate()
+//    {
+//
+//    }
 
     public void printHelp()
     {
@@ -37,8 +36,8 @@ public class Argument
     {
         this.helpMsg = helpMsg;
     }
-    public void setValidator(ValidatorFunction<T> validatorFunction)
+    public void setValidationFunc(ValidationFunction<T> validationFunction)
     {
-        this.validatorFunction = validatorFunction;
+        this.validationFunction = validationFunction;
     }
 }
