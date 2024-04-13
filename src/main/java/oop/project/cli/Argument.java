@@ -32,12 +32,18 @@ public class Argument<T>
     public T validate(String input) throws Exception {
         T parsedInput = convertStringToType(input, type);
 
-        if (validationFunction.validate(parsedInput))
+        if (validationFunction == null)
         {
             return parsedInput;
         }
-
-        throw new Exception("Validation failed");
+        else if (validationFunction.validate(parsedInput))
+        {
+            return parsedInput;
+        }
+        else
+        {
+            throw new Exception("Validation failed");
+        }
     }
 
     public void printHelp() {
