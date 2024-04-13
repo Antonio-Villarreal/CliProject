@@ -16,6 +16,7 @@ public class ArgumentParser {
     public ArgumentParser(String name, String identifier) {
         this.name = name;
         this.identifier = identifier;
+        this.description = null;
     }
 
     public ArgumentParser(String name, String identifier, String description) {
@@ -39,6 +40,34 @@ public class ArgumentParser {
 
     public void updateArgumentRequired(String name, Boolean required) {
         getArgument(name).setRequired(required);
+    }
+
+    public Map<String, Object> getArgs() {
+        return values;
+    }
+
+    public Object getArg(String name) {
+        return getValue(name);
+    }
+
+    public void printHelpMessage() {
+        System.out.println(name);
+        System.out.println();
+        if(description != null) {
+            System.out.println(description);
+            System.out.println();
+        }
+        System.out.println("Usage: " + identifier + " [ARGUMENTS] [COMMAND]");
+        System.out.println();
+        System.out.println("Arguments:");
+        for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
+            Argument argument = entry.getValue();
+            argument.printHelp();
+        }
+        System.out.println();
+        System.out.println("Optional Arguments:");
+        System.out.println("\t--help\tMSG: Show the help message.");
+        // ADD LOGIC FOR COMMANDS
     }
 
     private Argument getArgument(String name) {
@@ -68,13 +97,5 @@ public class ArgumentParser {
         }
         values.put(name, value);
     }
-
-//    public ArgumentParser addCommand() {}
-//
-//    public void parseArgs() {}
-//
-//    public Map<String, Object> getArgs() {}
-//
-//    public Object getArg() {}
 
 }
