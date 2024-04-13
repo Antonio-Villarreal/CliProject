@@ -1,29 +1,27 @@
 package oop.project.cli;
 
 import org.checkerframework.checker.units.qual.A;
-import org.checkerframework.checker.units.qual.C;
 
 import java.util.Map;
 import java.util.LinkedHashMap;
 
-public class ArgumentParser {
+public class Command {
     String name;
     String identifier;
     String description;
 
     Map<String, Argument> arguments = new LinkedHashMap<>();
-    Map<String, Command> commands = new LinkedHashMap<>();
     Map<String, Object> values = new LinkedHashMap<>();
 
-    private ArgumentParser() {}
+    private Command() {}
 
-    public ArgumentParser(String name, String identifier) {
+    public Command(String name, String identifier) {
         this.name = name;
         this.identifier = identifier;
         this.description = null;
     }
 
-    public ArgumentParser(String name, String identifier, String description) {
+    public Command(String name, String identifier, String description) {
         this.name = name;
         this.identifier = identifier;
         this.description = description;
@@ -46,24 +44,22 @@ public class ArgumentParser {
         getArgument(name).setRequired(required);
     }
 
-    public Command createCommand(String name, String identifier) {
-        Command newCommand = new Command(name, identifier);
-        storeCommand(identifier, newCommand);
-        return newCommand;
-    }
-
-    public Command createCommand(String name, String identifier, String description) {
-        Command newCommand = new Command(name, identifier, description);
-        storeCommand(identifier, newCommand);
-        return newCommand;
-    }
-
     public Map<String, Object> getArgs() {
         return values;
     }
 
     public Object getArg(String name) {
         return getValue(name);
+    }
+
+    public void printCompactHelpMessage() {
+        StringBuilder msg = new StringBuilder();
+        msg.append("\t").append(identifier).append("\t");
+        for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
+            Argument argument = entry.getValue();
+            msg.append(argument.printHelp());
+        }
+        System.out.println(msg.toString());
     }
 
     public void printHelpMessage() {
@@ -78,14 +74,9 @@ public class ArgumentParser {
         System.out.println("Arguments:");
         for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
             Argument argument = entry.getValue();
-            System.out.println(argument.printHelp());
+            argument.printHelp();
         }
         System.out.println();
-        System.out.println("Commands:");
-        for (Map.Entry<String, Command> entry : commands.entrySet()) {
-            Command command = entry.getValue();
-            command.printCompactHelpMessage();
-        }
         System.out.println();
         System.out.println("Optional Arguments:");
         System.out.println("\t--help\tMSG: Show the help message.");
@@ -96,13 +87,6 @@ public class ArgumentParser {
             throw new IllegalArgumentException("Argument with name '" + name + "' not found.");
         }
         return arguments.get(name);
-    }
-
-    private Command getCommand(String identifier) {
-        if (commands.containsKey(identifier)) {
-            throw new IllegalArgumentException("Argument with name '" + identifier + "' not found.");
-        }
-        return commands.get(identifier);
     }
 
     private Object getValue(String name) {
@@ -117,13 +101,6 @@ public class ArgumentParser {
             throw new IllegalArgumentException("Argument with name '" + name + "' already exists.");
         }
         arguments.put(name, argument);
-    }
-
-    private void storeCommand(String identifier, Command command) {
-        if(commands.containsKey(identifier)) {
-            throw new IllegalArgumentException("Value with name '" + identifier + "' already exists.");
-        }
-        commands.put(identifier, command);
     }
 
     private void storeValue(String name, Object value) {
