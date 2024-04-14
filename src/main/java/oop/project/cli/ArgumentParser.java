@@ -205,12 +205,10 @@ public class ArgumentParser {
 
     }
 
-    public Map<String, Object> getArgs() {
-        return values;
-    }
-
     public Object getArg(String name) {
-        return getValue(name);
+        Class<?> type = getArgument(name).type;
+        Object value = getValue(name);
+        return type.cast(value);
     }
 
 
