@@ -13,7 +13,7 @@ public class Scenarios {
      * structure and requirements you may need to make changes to adapt it to
      * your needs - use whatever is convenient for your design.
      */
-    public static Map<String, Object> parse(String command) {
+    public static Map<String, Object> parse(String command) throws Exception {
         //This assumes commands follow a similar structure to unix commands,
         //e.g. `command [arguments...]`. If your project uses a different
         //structure, e.g. Lisp syntax like `(command [arguments...])`, you may
@@ -25,8 +25,8 @@ public class Scenarios {
             case "add" -> add(arguments);
             case "sub" -> sub(arguments);
             case "sqrt" -> sqrt(arguments);
-            case "calc" -> calc(arguments);
-            case "date" -> date(arguments);
+//            case "calc" -> calc(arguments);
+//            case "date" -> date(arguments);
             default -> throw new IllegalArgumentException("Unknown command.");
         };
     }
@@ -36,10 +36,14 @@ public class Scenarios {
      *  - {@code left: <your integer type>}
      *  - {@code right: <your integer type>}
      */
-    private static Map<String, Object> add(String arguments) {
+    private static Map<String, Object> add(String arguments) throws Exception {
         //TODO: Parse arguments and extract values.
-        int left = 0; //or BigInteger, etc.
-        int right = 0;
+        ArgumentParser argparse = new ArgumentParser("Addition", "add", "Performs addition");
+        argparse.addArgument("left", Integer.class);
+        argparse.addArgument("right", Integer.class);
+        argparse.parseArgs(arguments);
+        var left = (Integer) argparse.getArg("left");
+        var right = (Integer) argparse.getArg("right");
         return Map.of("left", left, "right", right);
     }
 
@@ -50,10 +54,15 @@ public class Scenarios {
      *       this as a non-optional decimal value using a default of 0.0.
      *  - {@code right: <your decimal type>} (required)
      */
-    static Map<String, Object> sub(String arguments) {
+    static Map<String, Object> sub(String arguments) throws Exception {
         //TODO: Parse arguments and extract values.
-        Optional<Double> left = Optional.empty();
-        double right = 0.0;
+        ArgumentParser argparse = new ArgumentParser("Subtract", "sub", "Performs subtraction");
+        argparse.addArgument("left", Double.class);
+        argparse.updateArgumentRequired("left", Boolean.FALSE);
+        argparse.addArgument("right", Double.class);
+        argparse.parseArgs(arguments);
+        var left = (Double) argparse.getArg("left");
+        var right = (Double) argparse.getArg("right");
         return Map.of("left", left, "right", right);
     }
 
@@ -61,40 +70,45 @@ public class Scenarios {
      * Takes one positional argument:
      *  - {@code number: <your integer type>} where {@code number >= 0}
      */
-    static Map<String, Object> sqrt(String arguments) {
+    static Map<String, Object> sqrt(String arguments) throws Exception {
         //TODO: Parse arguments and extract values.
-        int number = 0;
+        ArgumentParser argparse = new ArgumentParser("Square Root", "sqrt", "Performs Square Root");
+        argparse.addArgument("number", Integer.class);
+        ValidationFunction<Integer> nonNegativeValidator = value -> value >= 0;
+        argparse.updateArgumentValidationFunc("number", nonNegativeValidator);
+        argparse.parseArgs(arguments);
+        Integer number = (Integer) argparse.getArg("number");
         return Map.of("number", number);
     }
 
-    /**
-     * Takes one positional argument:
-     *  - {@code subcommand: "add" | "div" | "sqrt" }, aka one of these values.
-     *     - Note: Not all projects support subcommands, but if yours does you
-     *       may want to take advantage of this scenario for that.
-     */
-    static Map<String, Object> calc(String arguments) {
-        //TODO: Parse arguments and extract values.
-        String subcommand = "";
-        return Map.of("subcommand", subcommand);
-    }
-
-    /**
-     * Takes one positional argument:
-     *  - {@code date: Date}, a custom type representing a {@code LocalDate}
-     *    object (say at least yyyy-mm-dd, or whatever you prefer).
-     *     - Note: Consider this a type that CANNOT be supported by your library
-     *       out of the box and requires a custom type to be defined.
-     */
-    static Map<String, Object> date(String arguments) {
-        //TODO: Parse arguments and extract values.
-        LocalDate date = LocalDate.EPOCH;
-        return Map.of("date", date);
-    }
-
-    //TODO: Add your own scenarios based on your software design writeup. You
-    //should have a couple from pain points at least, and likely some others
-    //for notable features. This doesn't need to be exhaustive, but this is a
-    //good place to test/showcase your functionality in context.
+//    /**
+//     * Takes one positional argument:
+//     *  - {@code subcommand: "add" | "div" | "sqrt" }, aka one of these values.
+//     *     - Note: Not all projects support subcommands, but if yours does you
+//     *       may want to take advantage of this scenario for that.
+//     */
+//    static Map<String, Object> calc(String arguments) throws Exception {
+//        //TODO: Parse arguments and extract values.
+//        String subcommand = "";
+//        return Map.of("subcommand", subcommand);
+//    }
+//
+//    /**
+//     * Takes one positional argument:
+//     *  - {@code date: Date}, a custom type representing a {@code LocalDate}
+//     *    object (say at least yyyy-mm-dd, or whatever you prefer).
+//     *     - Note: Consider this a type that CANNOT be supported by your library
+//     *       out of the box and requires a custom type to be defined.
+//     */
+//    static Map<String, Object> date(String arguments) {
+//        //TODO: Parse arguments and extract values.
+//        LocalDate date = LocalDate.EPOCH;
+//        return Map.of("date", date);
+//    }
+//
+//    //TODO: Add your own scenarios based on your software design writeup. You
+//    //should have a couple from pain points at least, and likely some others
+//    //for notable features. This doesn't need to be exhaustive, but this is a
+//    //good place to test/showcase your functionality in context.
 
 }
