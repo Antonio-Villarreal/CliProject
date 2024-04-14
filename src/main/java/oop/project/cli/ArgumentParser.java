@@ -2,7 +2,10 @@ package oop.project.cli;
 
 import org.checkerframework.checker.units.qual.A;
 import org.checkerframework.checker.units.qual.C;
+import com.google.common.base.Splitter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.LinkedHashMap;
 
@@ -56,14 +59,6 @@ public class ArgumentParser {
         Command newCommand = new Command(name, identifier, description);
         storeCommand(identifier, newCommand);
         return newCommand;
-    }
-
-    public Map<String, Object> getArgs() {
-        return values;
-    }
-
-    public Object getArg(String name) {
-        return getValue(name);
     }
 
     public void printHelpMessage() {
@@ -135,6 +130,87 @@ public class ArgumentParser {
             throw new IllegalArgumentException("Value with name '" + name + "' already exists.");
         }
         values.put(name, value);
+    }
+
+    private void handleFlag(List<String> flags, List<String> positionalArguments) throws Exception {
+        // Check the exception
+        if(flags.size() != positionalArguments.size()){
+            throw new IllegalArgumentException("Flags number should match with Arguments number"); // Change the error message later
+        }
+
+        // Validate flags and positional arguments
+        int count = 0;
+        for( Map.Entry<String, Argument> argument : arguments.entrySet()){
+            String argName = argument.getKey();
+            Argument arg = argument.getValue();
+            if(arg.required){
+               if(!argName.equals(flags.get(count).substring(2))) {
+                   throw new Exception("Missing required argument.");
+               }
+            }
+            if(argName.equals(flags.get(count).substring(2))){
+                values.put(argName, arg.validate(positionalArguments.get(count)));
+                count++;
+            }
+
+        }
+
+    }
+
+    private void handlePos(List<String> positionalArguments) throws Exception {
+        int count = 0;
+        for( Map.Entry<String, Argument> argument : arguments.entrySet()){
+            String argName = argument.getKey();
+            Argument arg = argument.getValue();
+            values.put(argName, arg.validate(positionalArguments.get(count)));
+            count++;
+        }
+        if(count != positionalArguments.size()){
+            throw new IllegalArgumentException("Incorrect number of arguments (not PosArg)"); // Change the error message later
+        }
+    }
+
+    public void parseArgs(String input) throws Exception {
+
+        Iterable<String> tokens = Splitter.on(' ')
+                .trimResults()
+                .omitEmptyStrings()
+                .split(input);
+
+        boolean isFirstToken = true;
+        String command = null;
+        List<String> flags = new ArrayList<>();
+        List<String> positionalArguments = new ArrayList<>();
+
+        for (String token : tokens) {
+            if (isFirstToken) {
+                command = token;
+                isFirstToken = false;
+            } else if (token.startsWith("--")) {
+                flags.add(token);
+            } else {
+                positionalArguments.add(token);
+            }
+        }
+
+        // Process flags
+        if(!flags.isEmpty()){
+            handleFlag(flags, positionalArguments);
+        }
+
+        //process positional
+        if(flags.isEmpty()){
+            handlePos(positionalArguments);
+        }
+
+    }
+
+    public Map<String, Object> getArgs() {
+        return values;
+    }
+
+    public Object getArg(String name) {
+        return getValue(name);
     }
 
 
