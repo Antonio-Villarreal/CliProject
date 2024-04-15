@@ -91,21 +91,21 @@ public class ArgumentParser {
     }
 
     private Argument getArgument(String name) {
-        if (arguments.containsKey(name)) {
+        if (!arguments.containsKey(name)) {
             throw new IllegalArgumentException("Argument with name '" + name + "' not found.");
         }
         return arguments.get(name);
     }
 
     private Command getCommand(String identifier) {
-        if (commands.containsKey(identifier)) {
-            throw new IllegalArgumentException("Argument with name '" + identifier + "' not found.");
+        if (!commands.containsKey(identifier)) {
+            throw new IllegalArgumentException("Command with name '" + identifier + "' not found.");
         }
         return commands.get(identifier);
     }
 
     private Object getValue(String name) {
-        if (values.containsKey(name)) {
+        if (!values.containsKey(name)) {
             throw new IllegalArgumentException("Value with name '" + name + "' not found.");
         }
         return values.get(name);
@@ -135,7 +135,7 @@ public class ArgumentParser {
     private void handleFlag(List<String> flags, List<String> positionalArguments) throws Exception {
         // Check the exception
         if(flags.size() != positionalArguments.size()){
-            throw new IllegalArgumentException("Flags number should match with Arguments number"); // Change the error message later
+            throw new IllegalArgumentException("Flags number should match with Arguments number"); //TODO Change the error message later
         }
 
         // Validate flags and positional arguments
@@ -152,21 +152,19 @@ public class ArgumentParser {
                 values.put(argName, arg.validate(positionalArguments.get(count)));
                 count++;
             }
-
         }
-
     }
 
     private void handlePos(List<String> positionalArguments) throws Exception {
         int count = 0;
-        for( Map.Entry<String, Argument> argument : arguments.entrySet()){
+        for(Map.Entry<String, Argument> argument : arguments.entrySet()){
             String argName = argument.getKey();
             Argument arg = argument.getValue();
             values.put(argName, arg.validate(positionalArguments.get(count)));
             count++;
         }
         if(count != positionalArguments.size()){
-            throw new IllegalArgumentException("Incorrect number of arguments (not PosArg)"); // Change the error message later
+            throw new IllegalArgumentException("Incorrect number of arguments (not PosArg)"); // TODO Change the error message later
         }
     }
 
@@ -182,11 +180,15 @@ public class ArgumentParser {
         List<String> flags = new ArrayList<>();
         List<String> positionalArguments = new ArrayList<>();
 
+        //
+        // TODO Scenarios.java's parse method removes the first token for us which is usually the root command ('git', 'cd', 'mv', etc.) so we don't have to check for it
+        //
         for (String token : tokens) {
-            if (isFirstToken) {
-                command = token;
-                isFirstToken = false;
-            } else if (token.startsWith("--")) {
+//            if (isFirstToken) {
+//                command = token;
+//                isFirstToken = false;
+//            } else
+                if (token.startsWith("--")) {
                 flags.add(token);
             } else {
                 positionalArguments.add(token);
@@ -199,14 +201,14 @@ public class ArgumentParser {
         }
 
         //process positional
-        if(flags.isEmpty()){
+        if(!positionalArguments.isEmpty()){
             handlePos(positionalArguments);
         }
 
     }
 
-    public Object getArg(String name) {
-        Class<?> type = getArgument(name).type;
+    public <T> Object getArg(String name) {
+        Class<T> type = getArgument(name).type;
         Object value = getValue(name);
         return type.cast(value);
     }
