@@ -97,24 +97,24 @@ public class ScenariosTests {
 //        }
 //
 //    }
-//
-//    @Nested
-//    class Date {
-//
-//        @ParameterizedTest
-//        @MethodSource
-//        public void testDate(String name, String command, Object expected) throws Exception {
-//            test(command, expected);
-//        }
-//
-//        public static Stream<Arguments> testDate() {
-//            return Stream.of(
-//                Arguments.of("Date", "date 2024-01-01", Map.of("date", LocalDate.of(2024, 1, 1))),
-//                Arguments.of("Invalid", "date 20240401", null)
-//            );
-//        }
-//
-//    }
+
+    @Nested
+    class Date {
+
+        @ParameterizedTest
+        @MethodSource
+        public void testDate(String name, String command, Object expected) throws Exception {
+            test(command, expected);
+        }
+
+        public static Stream<Arguments> testDate() {
+            return Stream.of(
+                Arguments.of("Date", "date 2024-01-01", Map.of("date", LocalDate.of(2024, 1, 1))),
+                Arguments.of("Invalid", "date 20240401", null)
+            );
+        }
+
+    }
 
     private static void test(String command, Object expected) throws Exception {
         if (expected != null) {
