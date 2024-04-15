@@ -1,6 +1,7 @@
 package oop.project.cli;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,7 +27,7 @@ public class Scenarios {
             case "sub" -> sub(arguments);
             case "sqrt" -> sqrt(arguments);
 //            case "calc" -> calc(arguments);
-//            case "date" -> date(arguments);
+            case "date" -> date(arguments);
             default -> throw new IllegalArgumentException("Unknown command.");
         };
     }
@@ -92,23 +93,27 @@ public class Scenarios {
 //        String subcommand = "";
 //        return Map.of("subcommand", subcommand);
 //    }
-//
-//    /**
-//     * Takes one positional argument:
-//     *  - {@code date: Date}, a custom type representing a {@code LocalDate}
-//     *    object (say at least yyyy-mm-dd, or whatever you prefer).
-//     *     - Note: Consider this a type that CANNOT be supported by your library
-//     *       out of the box and requires a custom type to be defined.
-//     */
-//    static Map<String, Object> date(String arguments) {
-//        //TODO: Parse arguments and extract values.
-//        LocalDate date = LocalDate.EPOCH;
-//        return Map.of("date", date);
-//    }
-//
-//    //TODO: Add your own scenarios based on your software design writeup. You
-//    //should have a couple from pain points at least, and likely some others
-//    //for notable features. This doesn't need to be exhaustive, but this is a
-//    //good place to test/showcase your functionality in context.
+
+    /**
+     * Takes one positional argument:
+     *  - {@code date: Date}, a custom type representing a {@code LocalDate}
+     *    object (say at least yyyy-mm-dd, or whatever you prefer).
+     *     - Note: Consider this a type that CANNOT be supported by your library
+     *       out of the box and requires a custom type to be defined.
+     */
+    static Map<String, Object> date(String arguments) throws Exception {
+        //TODO: Parse arguments and extract values.
+        ArgumentParser argparse = new ArgumentParser("Calendar", "date", "Performs String to Date Conversion");
+        argparse.addArgument("str_date", LocalDate.class);
+        argparse.updateCustomTypeConversionMethod("str_date", "parse");
+        argparse.parseArgs(arguments);
+        LocalDate date = (LocalDate) argparse.getArg("str_date");
+        return Map.of("date", date);
+    }
+
+    //TODO: Add your own scenarios based on your software design writeup. You
+    //should have a couple from pain points at least, and likely some others
+    //for notable features. This doesn't need to be exhaustive, but this is a
+    //good place to test/showcase your functionality in context.
 
 }
