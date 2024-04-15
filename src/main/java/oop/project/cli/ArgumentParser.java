@@ -33,7 +33,7 @@ public class ArgumentParser {
     }
 
     public void addArgument(String name, Class<?> type) {
-        var newArgument = new Argument(name, type);
+        Argument newArgument = new Argument(name, type);
         storeArgument(name, newArgument);
     }
 
@@ -43,6 +43,10 @@ public class ArgumentParser {
 
     public void updateArgumentValidationFunc(String name, ValidationFunction<?> validationFunction) {
         getArgument(name).setValidationFunc(validationFunction);
+    }
+
+    public void updateCustomTypeConversionMethod(String name, String customTypeConversionMethod) {
+        getArgument(name).setCustomTypeConversionMethod(customTypeConversionMethod);
     }
 
     public void updateArgumentRequired(String name, Boolean required) {
@@ -132,7 +136,7 @@ public class ArgumentParser {
         values.put(name, value);
     }
 
-    private void handleFlag(List<String> flags, List<String> positionalArguments) throws Exception {
+    private void handleFlagged(List<String> flags, List<String> positionalArguments) throws Exception {
         // Check the exception
         if(flags.size() != positionalArguments.size()){
             throw new IllegalArgumentException("Flags number should match with Arguments number"); //TODO Change the error message later
@@ -155,7 +159,7 @@ public class ArgumentParser {
         }
     }
 
-    private void handlePos(List<String> positionalArguments) throws Exception {
+    private void handlePositional(List<String> positionalArguments) throws Exception {
         int count = 0;
         for(Map.Entry<String, Argument> argument : arguments.entrySet()){
             String argName = argument.getKey();
@@ -197,12 +201,12 @@ public class ArgumentParser {
 
         // Process flags
         if(!flags.isEmpty()){
-            handleFlag(flags, positionalArguments);
+            handleFlagged(flags, positionalArguments);
         }
 
         //process positional
         if(!positionalArguments.isEmpty()){
-            handlePos(positionalArguments);
+            handlePositional(positionalArguments);
         }
 
     }
