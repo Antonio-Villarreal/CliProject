@@ -1,9 +1,9 @@
 package oop.project.cli;
 
+import com.google.common.base.Splitter;
 import org.checkerframework.checker.units.qual.A;
 
-import java.util.Map;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 public class Command extends Parser {
 
@@ -47,5 +47,18 @@ public class Command extends Parser {
         System.out.println();
         System.out.println("Optional Arguments:");
         System.out.println("\t--help\tMSG: Show the help message.");
+    }
+
+    public void parseArgs(List<String> tokens) throws Exception {
+        if(!(Objects.equals(tokens.getFirst(), identifier))) {
+            throw new Exception("Incorrect Identifier in Command");
+        }
+        tokens.removeFirst();
+
+        if (Objects.equals(tokens.getFirst(), "-h") || Objects.equals(tokens.getFirst(), "--help")) {
+            printHelpMessage();
+        } else {
+            parse(tokens);
+        }
     }
 }

@@ -25,6 +25,7 @@ public class ScenariosTests {
         public static Stream<Arguments> testAdd() {
             return Stream.of(
                 Arguments.of("Add", "add 1 2", Map.of("left", 1, "right", 2)),
+                Arguments.of("Add", "add --left 1 --right 2", Map.of("left", 1, "right", 2)),
                 Arguments.of("Missing Argument", "add 1", null),
                 Arguments.of("Extraneous Argument", "add 1 2 3", null),
                 Arguments.of("Not A Number", "add one two", null),
@@ -47,7 +48,7 @@ public class ScenariosTests {
             return Stream.of(
                 Arguments.of("Sub", "sub --left 1.0 --right 2.0", Map.of("left", 1.0, "right", 2.0)),
                 Arguments.of("Left Only", "sub --left 1.0", null),
-                Arguments.of("Right Only", "sub --right 2.0", Map.of("left", Optional.empty(), "right", 2.0)),
+                Arguments.of("Right Only", "sub --right 2.0", Map.of("right", 2.0)),
                 Arguments.of("Missing Value", "sub --right", null),
                 Arguments.of("Extraneous Argument", "sub --right 2.0 extraneous", null),
                 Arguments.of("Misspelled Flag", "sub --write 2.0", null),
@@ -77,26 +78,27 @@ public class ScenariosTests {
 
     }
 
-//    @Nested
-//    class Calc {
-//
-//        @ParameterizedTest
-//        @MethodSource
-//        public void testCalc(String name, String command, Object expected) throws Exception {
-//            test(command, expected);
-//        }
-//
-//        public static Stream<Arguments> testCalc() {
-//            return Stream.of(
-//                Arguments.of("Add", "calc add", Map.of("subcommand", "add")),
-//                Arguments.of("Sub", "calc sub", Map.of("subcommand", "sub")),
-//                Arguments.of("Sqrt", "calc sqrt", Map.of("subcommand", "sqrt")),
-//                Arguments.of("Missing", "calc", null),
-//                Arguments.of("Invalid", "calc unknown", null)
-//            );
-//        }
-//
-//    }
+    @Nested
+    class Calc {
+
+        @ParameterizedTest
+        @MethodSource
+        public void testCalc(String name, String command, Object expected) throws Exception {
+            test(command, expected);
+        }
+
+        public static Stream<Arguments> testCalc() {
+            return Stream.of(
+                Arguments.of("Add", "calc add 1 2", Map.of("left", 1, "right", 2)),
+                Arguments.of("Div", "calc div 1.0 2.0", Map.of("denominator", 2.0, "numerator", 1.0)),
+                Arguments.of("Sub", "calc sub 1.0 2.0", null),
+                Arguments.of("Sqrt", "calc sqrt 4", Map.of("number", 4)),
+                Arguments.of("Missing", "calc", null),
+                Arguments.of("Invalid", "calc unknown", null)
+            );
+        }
+
+    }
 
     @Nested
     class Date {
