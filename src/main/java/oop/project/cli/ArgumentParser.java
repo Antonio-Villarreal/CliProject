@@ -15,9 +15,7 @@ import java.util.*;
  */
 public class ArgumentParser extends Parser {
     //Storage
-    /**
-     * Stores the mapping of command names to Command objects that the parser can recognize and handle.
-     */
+
     protected Map<String, Command> commands = new LinkedHashMap<>();
 
     /* CONSTRUCTORS */
@@ -56,13 +54,6 @@ public class ArgumentParser extends Parser {
     }
 
     /* MAP STORAGE METHODS */
-    /**
-     * Retrieves a Command object from the map of commands by its identifier. If the command is not found,
-     * an IllegalArgumentException is thrown.
-     *
-     * @param identifier The unique identifier of the command to retrieve.
-     * @return The Command object associated with the given identifier.
-     */
     private Command getCommandFromMap(String identifier) {
         if (!commands.containsKey(identifier)) {
             throw new IllegalArgumentException("Command with name '" + identifier + "' not found.");
@@ -70,13 +61,6 @@ public class ArgumentParser extends Parser {
         return commands.get(identifier);
     }
 
-    /**
-     * Stores a Command object to the map of commands based on its identifier. If the command already exists,
-     * an IllegalArgumentException is thrown.
-     *
-     * @param identifier The unique identifier that will be used to retrieve the command.
-     * @param command The Command object that will be stored.
-     */
     private void storeCommandInMap(String identifier, Command command) {
         if(commands.containsKey(identifier)) {
             throw new IllegalArgumentException("Value with name '" + identifier + "' already exists.");
@@ -88,7 +72,7 @@ public class ArgumentParser extends Parser {
 
     /**
      * Prints all the arguments and commands attached to this Command object.
-     * </p>
+     *
      * The message is formatted and displays information about the Command including its description, usage syntax,
      * arguments, and optional arguments.
      */
@@ -121,14 +105,35 @@ public class ArgumentParser extends Parser {
         System.out.println("\t--help\tMSG: Show the help message.");
     }
 
+    /**
+     * Getter for a specific argument in a command.
+     *
+     * @param command The identifier of the command to retrieve the command from the map of Commands.
+     * @param name The name of the Argument to retreive from the command's map of arguments.
+     * @return The parsed value of the command line argument that is stored in the Command object.
+     */
     public Object getParsedCommandArgument(String command, String name) {
         return getCommandFromMap(command).getParsedArgument(name);
     }
-
+    /**
+     * Getter for all the parsed arguments in a Command.
+     *
+     * @param command String representation of the unique identifier of the Command for retrieval in the map.
+     * @return A map parsed Commands where the keys are the command's unique identifier.
+     */
     public Map<String, Object> getParsedCommandArguments(String command) {
         return getCommandFromMap(command).getParsedArguments();
     }
 
+    /**
+     * Parses the input string to handle different types of command arguments or flags.
+     * This method tokenizes the input based on spaces, validates,then routes
+     * the command processing based on the type of argument or command detected.
+     *
+     * @param input The raw input string containing the command and its arguments.
+     * @throws Exception If the first token does not match the expected command identifier, indicating that
+     *                   the input is not intended for this parser, or if any other parsing error occurs.
+     */
     public void parseArgs(String input) throws Exception {
         //Tokenizes
         List<String> tokens = new ArrayList<>();

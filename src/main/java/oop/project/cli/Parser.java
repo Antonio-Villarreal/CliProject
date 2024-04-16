@@ -28,9 +28,7 @@ public abstract class Parser {
     }
 
     /**
-     *
-     * @param name
-     * @param identifier
+     * Private constructor to prevent instantiation without required fields.
      */
     public Parser(String name, String identifier) {
         this.name = name;
@@ -38,7 +36,12 @@ public abstract class Parser {
         this.description = null;
     }
 
-
+    /**
+     * Constructs a oop.project.cli.Parser with a specified name and identifier.
+     *
+     * @param name The display name of the parser.
+     * @param identifier The unique identifier for the parser.
+     */
     public Parser(String name, String identifier, String description) {
         this.name = name;
         this.identifier = identifier;
@@ -46,13 +49,23 @@ public abstract class Parser {
     }
 
     /* GETTER METHODS */
-
+    /**
+     * Returns the name of the parser.
+     * @return The name of the parser.
+     */
     public String name() { return name; }
-
+    /**
+     * Returns the identifier of the parser.
+     * @return The identifier of the parser.
+     */
     public String identifier() { return identifier; }
 
     /* ARGUMENT METHOD */
-
+    /**
+     * Adds an argument to the parser's list of arguments.
+     *
+     * @param argument The argument to be added.
+     */
     public void addArgument(Argument argument) {
         storeArgumentInMap(argument.name(), argument);
     }
@@ -88,13 +101,27 @@ public abstract class Parser {
     }
 
     /* PARSING METHODS */
-
+    /**
+     * Retrieves the parsed value of a specified argument by casting it to its declared type.
+     * This method fetches the value from the internal map and casts it based on the type information
+     * provided by the Argument object associated with the name.
+     *
+     * @param name The name of the argument whose parsed value is to be retrieved.
+     * @return The parsed value of the argument, cast to its appropriate type.
+     * @throws IllegalArgumentException If the argument name does not exist or the value is empty.
+     */
     public Object getParsedArgument(String name) {
         Class type = getArgumentFromMap(name).type();
         Object value = getValueFromMap(name);
         return type.cast(value);
     }
-
+    /**
+     * Retrieves all arguments that have been parsed along with their corresponding values.
+     * This method filters out any arguments that have not been set (i.e., their values are Optional.empty())
+     * and returns a map of argument names to their parsed values.
+     *
+     * @return A map of argument names to their corresponding values, excluding any arguments that have not been set.
+     */
     public Map<String, Object> getParsedArguments() {
         Map<String, Object> parsedArgs = values.entrySet().stream()
                 .filter(entry -> entry.getValue().isPresent()) // Filter out entries with Optional.empty()
