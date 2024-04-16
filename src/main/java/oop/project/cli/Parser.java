@@ -36,6 +36,8 @@ public abstract class Parser {
         this.description = description;
     }
 
+    /* GETTER METHODS */
+
     public String name() { return name; }
 
     /* ARGUMENT METHOD */
