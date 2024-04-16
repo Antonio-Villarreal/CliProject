@@ -38,14 +38,15 @@ public class Scenarios {
      *  - {@code right: <your integer type>}
      */
     private static Map<String, Object> add(String arguments) throws Exception {
-        //TODO: Parse arguments and extract values.
         ArgumentParser argparse = new ArgumentParser("Addition", "add", "Performs addition");
-        argparse.addArgument("left", Integer.class);
-        argparse.addArgument("right", Integer.class);
+        argparse.addArgument(new Argument.ArgumentBuilder<>("left", Integer.class)
+                .required(Boolean.TRUE)
+                .build());
+        argparse.addArgument(new Argument.ArgumentBuilder<>("right", Integer.class)
+                .required(Boolean.TRUE)
+                .build());
         argparse.parseArgs(arguments);
-        var left = (Integer) argparse.getArg("left");
-        var right = (Integer) argparse.getArg("right");
-        return Map.of("left", left, "right", right);
+        return argparse.getParsedArguments();
     }
 
     /**
@@ -58,13 +59,14 @@ public class Scenarios {
     static Map<String, Object> sub(String arguments) throws Exception {
         //TODO: Parse arguments and extract values.
         ArgumentParser argparse = new ArgumentParser("Subtract", "sub", "Performs subtraction");
-        argparse.addArgument("left", Double.class);
-        argparse.updateArgumentRequired("left", Boolean.FALSE);
-        argparse.addArgument("right", Double.class);
+        argparse.addArgument(new Argument.ArgumentBuilder<>("left", Double.class)
+                .required(Boolean.FALSE)
+                .build());
+        argparse.addArgument(new Argument.ArgumentBuilder<>("right", Double.class)
+                .required(Boolean.TRUE)
+                .build());
         argparse.parseArgs(arguments);
-        var left = (Double) argparse.getArg("left");
-        var right = (Double) argparse.getArg("right");
-        return Map.of("left", left, "right", right);
+        return argparse.getParsedArguments();
     }
 
     /**
@@ -74,20 +76,21 @@ public class Scenarios {
     static Map<String, Object> sqrt(String arguments) throws Exception {
         //TODO: Parse arguments and extract values.
         ArgumentParser argparse = new ArgumentParser("Square Root", "sqrt", "Performs Square Root");
-        argparse.addArgument("number", Integer.class);
         ValidationFunction<Integer> nonNegativeValidator = value -> value >= 0;
-        argparse.updateArgumentValidationFunc("number", nonNegativeValidator);
+        argparse.addArgument(new Argument.ArgumentBuilder<>("number", Integer.class)
+                .required(Boolean.TRUE)
+                .validationFunction(nonNegativeValidator)
+                .build());
         argparse.parseArgs(arguments);
-        Integer number = (Integer) argparse.getArg("number");
-        return Map.of("number", number);
+        return argparse.getParsedArguments();
     }
 
-//    /**
-//     * Takes one positional argument:
-//     *  - {@code subcommand: "add" | "div" | "sqrt" }, aka one of these values.
-//     *     - Note: Not all projects support subcommands, but if yours does you
-//     *       may want to take advantage of this scenario for that.
-//     */
+    /**
+     * Takes one positional argument:
+     *  - {@code subcommand: "add" | "div" | "sqrt" }, aka one of these values.
+     *     - Note: Not all projects support subcommands, but if yours does you
+     *       may want to take advantage of this scenario for that.
+     */
 //    static Map<String, Object> calc(String arguments) throws Exception {
 //        //TODO: Parse arguments and extract values.
 //        String subcommand = "";
@@ -104,11 +107,12 @@ public class Scenarios {
     static Map<String, Object> date(String arguments) throws Exception {
         //TODO: Parse arguments and extract values.
         ArgumentParser argparse = new ArgumentParser("Calendar", "date", "Performs String to Date Conversion");
-        argparse.addArgument("str_date", LocalDate.class);
-        argparse.updateCustomTypeConversionMethod("str_date", "parse");
+        argparse.addArgument(new Argument.ArgumentBuilder<>("date", LocalDate.class)
+                .required(Boolean.TRUE)
+                .customTypeConversionMethod("parse")
+                .build());
         argparse.parseArgs(arguments);
-        LocalDate date = (LocalDate) argparse.getArg("str_date");
-        return Map.of("date", date);
+        return argparse.getParsedArguments();
     }
 
     //TODO: Add your own scenarios based on your software design writeup. You
