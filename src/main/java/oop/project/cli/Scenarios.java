@@ -84,6 +84,7 @@ public class Scenarios {
         return argparse.getParsedArguments();
     }
 
+
     /**
      * Takes one positional argument:
      *  - {@code subcommand: "add" | "div" | "sqrt" }, aka one of these values.
@@ -156,4 +157,16 @@ public class Scenarios {
     //for notable features. This doesn't need to be exhaustive, but this is a
     //good place to test/showcase your functionality in context.
 
+//    static Map<String, Object> unrecognizedArgument(String arguments) throws Exception {
+//        //TODO: Parse arguments and extract values.
+//        ArgumentParser argparse = new ArgumentParser("Addition", "add", "Adds two numbers together.");
+//        argparse.addArgument(new Argument.Builder<>("left", Integer.class)
+//                .required(Boolean.TRUE)
+//                .build());
+//        argparse.addArgument(new Argument.Builder<>("right", Integer.class)
+//                .required(Boolean.TRUE)
+//                .build());
+//        argparse.parseArgs(arguments);
+//        return argparse.getParsedArguments();
+//    }
 }

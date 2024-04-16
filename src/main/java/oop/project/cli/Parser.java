@@ -5,6 +5,9 @@ import com.google.common.base.Splitter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a parser that parses and stores arguments and parsed values.
+ */
 public abstract class Parser {
     //Required
     protected final String name;
@@ -24,11 +27,17 @@ public abstract class Parser {
         identifier = null;
     }
 
+    /**
+     *
+     * @param name
+     * @param identifier
+     */
     public Parser(String name, String identifier) {
         this.name = name;
         this.identifier = identifier;
         this.description = null;
     }
+
 
     public Parser(String name, String identifier, String description) {
         this.name = name;

@@ -115,7 +115,23 @@ public class ScenariosTests {
                 Arguments.of("Invalid", "date 20240401", null)
             );
         }
+    }
 
+    @Nested
+    class ErrorHandling {
+        @ParameterizedTest
+        @MethodSource
+        public void testErrorHandling(String name, String command, Object expected) throws Exception {
+            test(command, expected);
+        }
+
+        public static Stream<Arguments> testErrorHandling() {
+            return Stream.of(
+                    Arguments.of("Unrecognized Error", "add --middle 6 --right 5", null),
+                    Arguments.of("Mixed Positional and Flags", "add --left 6 5", null),
+                    Arguments.of("No Command", "6 5", null)
+            );
+        }
     }
 
     private static void test(String command, Object expected) throws Exception {
