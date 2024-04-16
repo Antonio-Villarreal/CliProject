@@ -2,10 +2,8 @@ package oop.project.cli;
 
 import com.google.common.base.Splitter;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class Parser {
     //Required
@@ -17,7 +15,7 @@ public abstract class Parser {
 
     //Storage
     protected Map<String, Argument> arguments = new LinkedHashMap<>();
-    protected Map<String, Object> values = new LinkedHashMap<>();
+    protected Map<String, Optional<Object>> values = new LinkedHashMap<>();
 
     /* CONSTRUCTORS */
 
@@ -58,6 +56,8 @@ public abstract class Parser {
     private Object getValueFromMap(String name) {
         if (!values.containsKey(name)) {
             throw new IllegalArgumentException("Value with name '" + name + "' not found.");
+        } else if (values.get(name) == Optional.empty()) {
+            throw new IllegalArgumentException("Value with name '" + name + "' found but was empty.");
         }
         return values.get(name);
     }
@@ -66,11 +66,12 @@ public abstract class Parser {
         if(arguments.containsKey(name)) {
             throw new IllegalArgumentException("Argument with name '" + name + "' already exists.");
         }
+        values.put(name, Optional.empty());
         arguments.put(name, argument);
     }
 
     private void storeValueInMap(String name, Object value) {
-        values.put(name, value);
+        values.put(name, Optional.ofNullable(value));
     }
 
     /* PARSING METHODS */
@@ -82,11 +83,12 @@ public abstract class Parser {
     }
 
     public Map<String, Object> getParsedArguments() {
-        return values;
+        Map<String, Object> parsedArgs = values.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().orElse(null)));
+        return parsedArgs;
     }
 
     public void parseArgs(String input) throws Exception {
-
         Iterable<String> tokens = Splitter.on(' ')
                 .trimResults()
                 .omitEmptyStrings()

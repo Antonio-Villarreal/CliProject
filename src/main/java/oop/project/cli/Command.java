@@ -19,14 +19,14 @@ public class Command extends Parser {
 
     /* HELP MESSAGE */
 
-    public void printCompactHelpMessage() {
+    public String getMessage() {
         StringBuilder msg = new StringBuilder();
         msg.append("\t").append(identifier).append("\t");
         for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
             Argument argument = entry.getValue();
-            msg.append(argument.printHelp());
+            msg.append(argument.getMessage());
         }
-        System.out.println(msg.toString());
+        return msg.toString();
     }
 
     public void printHelpMessage() {
@@ -41,7 +41,7 @@ public class Command extends Parser {
         System.out.println("Arguments:");
         for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
             Argument argument = entry.getValue();
-            argument.printHelp();
+            System.out.println(argument.getMessage());
         }
         System.out.println();
         System.out.println();
