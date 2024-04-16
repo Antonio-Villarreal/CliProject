@@ -5,52 +5,19 @@ import org.checkerframework.checker.units.qual.A;
 import java.util.Map;
 import java.util.LinkedHashMap;
 
-public class Command {
-    String name;
-    String identifier;
-    String description;
+public class Command extends Parser {
 
-    Map<String, Argument> arguments = new LinkedHashMap<>();
-    Map<String, Object> values = new LinkedHashMap<>();
-
-    private Command() {}
+    /* CONSTRUCTORS */
 
     public Command(String name, String identifier) {
-        this.name = name;
-        this.identifier = identifier;
-        this.description = null;
+        super(name, identifier);
     }
 
     public Command(String name, String identifier, String description) {
-        this.name = name;
-        this.identifier = identifier;
-        this.description = description;
+        super(name, identifier, description);
     }
 
-    public void addArgument(String name, Class<?> type) {
-        var newArgument = new Argument(name, type);
-        storeArgument(name, newArgument);
-    }
-
-    public void updateArgumentHelpMsg(String name, String description) {
-        getArgument(name).setHelpMsg(description);
-    }
-
-    public void updateArgumentValidationFunc(String name, ValidationFunction<?> validationFunction) {
-        getArgument(name).setValidationFunc(validationFunction);
-    }
-
-    public void updateArgumentRequired(String name, Boolean required) {
-        getArgument(name).setRequired(required);
-    }
-
-    public Map<String, Object> getArgs() {
-        return values;
-    }
-
-    public Object getArg(String name) {
-        return getValue(name);
-    }
+    /* HELP MESSAGE */
 
     public void printCompactHelpMessage() {
         StringBuilder msg = new StringBuilder();
@@ -81,34 +48,4 @@ public class Command {
         System.out.println("Optional Arguments:");
         System.out.println("\t--help\tMSG: Show the help message.");
     }
-
-    private Argument getArgument(String name) {
-        if (arguments.containsKey(name)) {
-            throw new IllegalArgumentException("Argument with name '" + name + "' not found.");
-        }
-        return arguments.get(name);
-    }
-
-    private Object getValue(String name) {
-        if (values.containsKey(name)) {
-            throw new IllegalArgumentException("Value with name '" + name + "' not found.");
-        }
-        return values.get(name);
-    }
-
-    private void storeArgument(String name, Argument argument) {
-        if(arguments.containsKey(name)) {
-            throw new IllegalArgumentException("Argument with name '" + name + "' already exists.");
-        }
-        arguments.put(name, argument);
-    }
-
-    private void storeValue(String name, Object value) {
-        if(values.containsKey(name)) {
-            throw new IllegalArgumentException("Value with name '" + name + "' already exists.");
-        }
-        values.put(name, value);
-    }
-
-
 }
