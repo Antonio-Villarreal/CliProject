@@ -60,7 +60,7 @@ public class ArgumentParser extends Parser {
             System.out.println("Arguments:");
             for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
                 Argument argument = entry.getValue();
-                System.out.println(argument.printHelp());
+                System.out.println(argument.getMessage());
             }
         }
         if (!commands.isEmpty()) {
@@ -68,7 +68,7 @@ public class ArgumentParser extends Parser {
             System.out.println("Commands:");
             for (Map.Entry<String, Command> entry : commands.entrySet()) {
                 Command command = entry.getValue();
-                command.printCompactHelpMessage();
+                System.out.println(command.getMessage());
             }
         }
         System.out.println();

@@ -1,9 +1,7 @@
 package oop.project.cli;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Map;
-import java.util.Optional;
 
 public class Scenarios {
 
@@ -39,10 +37,10 @@ public class Scenarios {
      */
     private static Map<String, Object> add(String arguments) throws Exception {
         ArgumentParser argparse = new ArgumentParser("Addition", "add", "Performs addition");
-        argparse.addArgument(new Argument.ArgumentBuilder<>("left", Integer.class)
+        argparse.addArgument(new Argument.Builder<>("left", Integer.class)
                 .required(Boolean.TRUE)
                 .build());
-        argparse.addArgument(new Argument.ArgumentBuilder<>("right", Integer.class)
+        argparse.addArgument(new Argument.Builder<>("right", Integer.class)
                 .required(Boolean.TRUE)
                 .build());
         argparse.parseArgs(arguments);
@@ -59,10 +57,10 @@ public class Scenarios {
     static Map<String, Object> sub(String arguments) throws Exception {
         //TODO: Parse arguments and extract values.
         ArgumentParser argparse = new ArgumentParser("Subtract", "sub", "Performs subtraction");
-        argparse.addArgument(new Argument.ArgumentBuilder<>("left", Double.class)
+        argparse.addArgument(new Argument.Builder<>("left", Double.class)
                 .required(Boolean.FALSE)
                 .build());
-        argparse.addArgument(new Argument.ArgumentBuilder<>("right", Double.class)
+        argparse.addArgument(new Argument.Builder<>("right", Double.class)
                 .required(Boolean.TRUE)
                 .build());
         argparse.parseArgs(arguments);
@@ -77,7 +75,7 @@ public class Scenarios {
         //TODO: Parse arguments and extract values.
         ArgumentParser argparse = new ArgumentParser("Square Root", "sqrt", "Performs Square Root");
         ValidationFunction<Integer> nonNegativeValidator = value -> value >= 0;
-        argparse.addArgument(new Argument.ArgumentBuilder<>("number", Integer.class)
+        argparse.addArgument(new Argument.Builder<>("number", Integer.class)
                 .required(Boolean.TRUE)
                 .validationFunction(nonNegativeValidator)
                 .build());
@@ -107,7 +105,7 @@ public class Scenarios {
     static Map<String, Object> date(String arguments) throws Exception {
         //TODO: Parse arguments and extract values.
         ArgumentParser argparse = new ArgumentParser("Calendar", "date", "Performs String to Date Conversion");
-        argparse.addArgument(new Argument.ArgumentBuilder<>("date", LocalDate.class)
+        argparse.addArgument(new Argument.Builder<>("date", LocalDate.class)
                 .required(Boolean.TRUE)
                 .customTypeConversionMethod("parse")
                 .build());
