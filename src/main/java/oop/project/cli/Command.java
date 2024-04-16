@@ -13,10 +13,27 @@ import java.util.*;
 public class Command extends Parser {
 
     /* CONSTRUCTORS */
+    /**
+     * Constructs a Command with a specified name and identifier.
+     * This constructor initializes a command without a description, setting up the fundamental identity
+     * parameters but leaving the description as null.
+     *
+     * @param name The display name of the command, used for identifying the command in a user-friendly manner.
+     * @param identifier A unique identifier for the command, used for command parsing and execution handling.
+     */
     public Command(String name, String identifier) {
         super(name, identifier);
     }
 
+    /**
+     * Constructs a Command with a specified name, identifier, and description.
+     * This constructor is used when a command needs a description for help messages or detailed displays,
+     * providing users or developers with more context about the command's purpose and usage.
+     *
+     * @param name The display name of the command.
+     * @param identifier A unique identifier for the command.
+     * @param description A brief description of what the command does, enhancing clarity in help messages or documentation.
+     */
     public Command(String name, String identifier, String description) {
         super(name, identifier, description);
     }
@@ -43,7 +60,7 @@ public class Command extends Parser {
 
     /**
      * Prints all the arguments and commands of this command object.
-     * </p>
+     *
      * The message is formatted and displays information about the command including its description, usage syntax,
      * arguments, and optional arguments.
      */

@@ -2,6 +2,9 @@ package oop.project.cli;
 
 import java.util.Scanner;
 
+/**
+ * The main class
+ */
 public class Main {
 
     /**
