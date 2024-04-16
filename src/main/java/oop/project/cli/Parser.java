@@ -96,7 +96,6 @@ public abstract class Parser {
     }
 
     public Map<String, Object> getParsedArguments() {
-        System.out.println(values);
         Map<String, Object> parsedArgs = values.entrySet().stream()
                 .filter(entry -> entry.getValue().isPresent()) // Filter out entries with Optional.empty()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().get()));
@@ -139,11 +138,7 @@ public abstract class Parser {
         }
     }
 
-
     private void positional(List<String> tokens) throws Exception {
-        System.out.println("here");
-        System.out.println(tokens);
-        System.out.println(arguments);
         if (tokens.size() != arguments.size()) {
             throw new ParseException("Mismatch between number of expected arguments and given arguments.");
         }
@@ -164,8 +159,7 @@ public abstract class Parser {
         }
     }
 
-
-    public void parse(List<String> tokens) throws Exception {
+    protected void parse(List<String> tokens) throws Exception {
         Boolean flagged = Boolean.FALSE;
         if(tokens.getFirst().contains("--")) {
             flagged = Boolean.TRUE;
