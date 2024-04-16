@@ -85,6 +85,7 @@ public class ArgumentParser extends Parser {
     }
 
     /* HELP MESSAGE */
+
     /**
      * Prints all the arguments and commands attached to this Command object.
      * </p>

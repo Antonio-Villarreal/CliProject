@@ -67,7 +67,9 @@ public class Command extends Parser {
         System.out.println("\t--help\tMSG: Show the help message.");
     }
 
-    public void parseArgs(List<String> tokens) throws Exception {
+    /* PARSING METHODS */
+
+    protected void parseArgs(List<String> tokens) throws Exception {
         if(!(Objects.equals(tokens.getFirst(), identifier))) {
             throw new Exception("Incorrect Identifier in Command");
         }
