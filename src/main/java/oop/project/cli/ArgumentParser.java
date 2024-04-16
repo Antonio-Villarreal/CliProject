@@ -4,63 +4,94 @@ import org.checkerframework.checker.units.qual.A;
 import org.checkerframework.checker.units.qual.C;
 import com.google.common.base.Splitter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.LinkedHashMap;
+import java.util.*;
 
-public class ArgumentParser {
-    String name;
-    String identifier;
-    String description;
 
-    Map<String, Argument> arguments = new LinkedHashMap<>();
-    Map<String, Command> commands = new LinkedHashMap<>();
-    Map<String, Object> values = new LinkedHashMap<>();
+/**
+ * ArgumentParser is a utility class designed to parse and handle command-line arguments for applications.
+ * It supports both positional arguments and named flags, as well as sub-commands with their own sets
+ * of arguments. It also provides functionality to print help messages based on the defined arguments
+ * and commands, and can validate argument values using custom validation functions.
+ */
+public class ArgumentParser extends Parser {
+    //Storage
+    /**
+     * Stores the mapping of command names to Command objects that the parser can recognize and handle.
+     */
+    protected Map<String, Command> commands = new LinkedHashMap<>();
 
-    private ArgumentParser() {}
-
+    /* CONSTRUCTORS */
+    /**
+     * Constructs a basic ArgumentParser with the specified name and identifier. This constructor
+     * delegates to the superclass Parser for basic initialization.
+     *
+     * @param name       The name of the program or utility that this ArgumentParser instance is for.
+     * @param identifier A unique identifier used in the command-line invocation of this program or utility.
+     */
     public ArgumentParser(String name, String identifier) {
-        this.name = name;
-        this.identifier = identifier;
-        this.description = null;
+        super(name, identifier);
     }
 
+    /**
+     * Constructs an ArgumentParser with a name, identifier, and description. This constructor
+     * delegates to the superclass Parser to include a description in the initialization process.
+     *
+     * @param name        The name of the program.
+     * @param identifier  The command-line identifier for the program.
+     * @param description A description of what the program or utility does.
+     */
     public ArgumentParser(String name, String identifier, String description) {
-        this.name = name;
-        this.identifier = identifier;
-        this.description = description;
+        super(name, identifier, description);
     }
 
-    public void addArgument(String name, Class<?> type) {
-        var newArgument = new Argument(name, type);
-        storeArgument(name, newArgument);
+    /* COMMAND METHOD */
+    /**
+     * Adds a Command object to the parser. If a command with the same name already exists,
+     * an IllegalArgumentException is thrown to avoid command name conflicts.
+     *
+     * @param command The Command object to add to the parser.
+     */
+    public void addCommand(Command command) {
+        storeCommandInMap(command.identifier(), command);
     }
 
-    public void updateArgumentHelpMsg(String name, String description) {
-        getArgument(name).setHelpMsg(description);
+    /* MAP STORAGE METHODS */
+    /**
+     * Retrieves a Command object from the map of commands by its identifier. If the command is not found,
+     * an IllegalArgumentException is thrown.
+     *
+     * @param identifier The unique identifier of the command to retrieve.
+     * @return The Command object associated with the given identifier.
+     */
+    private Command getCommandFromMap(String identifier) {
+        if (!commands.containsKey(identifier)) {
+            throw new IllegalArgumentException("Command with name '" + identifier + "' not found.");
+        }
+        return commands.get(identifier);
     }
 
-    public void updateArgumentValidationFunc(String name, ValidationFunction<?> validationFunction) {
-        getArgument(name).setValidationFunc(validationFunction);
+    /**
+     * Stores a Command object to the map of commands based on its identifier. If the command already exists,
+     * an IllegalArgumentException is thrown.
+     *
+     * @param identifier The unique identifier that will be used to retrieve the command.
+     * @param command The Command object that will be stored.
+     */
+    private void storeCommandInMap(String identifier, Command command) {
+        if(commands.containsKey(identifier)) {
+            throw new IllegalArgumentException("Value with name '" + identifier + "' already exists.");
+        }
+        commands.put(identifier, command);
     }
 
-    public void updateArgumentRequired(String name, Boolean required) {
-        getArgument(name).setRequired(required);
-    }
+    /* HELP MESSAGE */
 
-    public Command createCommand(String name, String identifier) {
-        Command newCommand = new Command(name, identifier);
-        storeCommand(identifier, newCommand);
-        return newCommand;
-    }
-
-    public Command createCommand(String name, String identifier, String description) {
-        Command newCommand = new Command(name, identifier, description);
-        storeCommand(identifier, newCommand);
-        return newCommand;
-    }
-
+    /**
+     * Prints all the arguments and commands attached to this Command object.
+     * </p>
+     * The message is formatted and displays information about the Command including its description, usage syntax,
+     * arguments, and optional arguments.
+     */
     public void printHelpMessage() {
         System.out.println(name);
         System.out.println();
@@ -74,7 +105,7 @@ public class ArgumentParser {
             System.out.println("Arguments:");
             for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
                 Argument argument = entry.getValue();
-                System.out.println(argument.printHelp());
+                System.out.println(argument.getMessage());
             }
         }
         if (!commands.isEmpty()) {
@@ -82,7 +113,7 @@ public class ArgumentParser {
             System.out.println("Commands:");
             for (Map.Entry<String, Command> entry : commands.entrySet()) {
                 Command command = entry.getValue();
-                command.printCompactHelpMessage();
+                System.out.println(command.getMessage());
             }
         }
         System.out.println();
@@ -90,128 +121,38 @@ public class ArgumentParser {
         System.out.println("\t--help\tMSG: Show the help message.");
     }
 
-    private Argument getArgument(String name) {
-        if (!arguments.containsKey(name)) {
-            throw new IllegalArgumentException("Argument with name '" + name + "' not found.");
-        }
-        return arguments.get(name);
+    public Object getParsedCommandArgument(String command, String name) {
+        return getCommandFromMap(command).getParsedArgument(name);
     }
 
-    private Command getCommand(String identifier) {
-        if (!commands.containsKey(identifier)) {
-            throw new IllegalArgumentException("Command with name '" + identifier + "' not found.");
-        }
-        return commands.get(identifier);
-    }
-
-    private Object getValue(String name) {
-        if (!values.containsKey(name)) {
-            throw new IllegalArgumentException("Value with name '" + name + "' not found.");
-        }
-        return values.get(name);
-    }
-
-    private void storeArgument(String name, Argument argument) {
-        if(arguments.containsKey(name)) {
-            throw new IllegalArgumentException("Argument with name '" + name + "' already exists.");
-        }
-        arguments.put(name, argument);
-    }
-
-    private void storeCommand(String identifier, Command command) {
-        if(commands.containsKey(identifier)) {
-            throw new IllegalArgumentException("Value with name '" + identifier + "' already exists.");
-        }
-        commands.put(identifier, command);
-    }
-
-    private void storeValue(String name, Object value) {
-        if(values.containsKey(name)) {
-            throw new IllegalArgumentException("Value with name '" + name + "' already exists.");
-        }
-        values.put(name, value);
-    }
-
-    private void handleFlag(List<String> flags, List<String> positionalArguments) throws Exception {
-        // Check the exception
-        if(flags.size() != positionalArguments.size()){
-            throw new IllegalArgumentException("Flags number should match with Arguments number"); //TODO Change the error message later
-        }
-
-        // Validate flags and positional arguments
-        int count = 0;
-        for( Map.Entry<String, Argument> argument : arguments.entrySet()){
-            String argName = argument.getKey();
-            Argument arg = argument.getValue();
-            if(arg.required){
-               if(!argName.equals(flags.get(count).substring(2))) {
-                   throw new Exception("Missing required argument.");
-               }
-            }
-            if(argName.equals(flags.get(count).substring(2))){
-                values.put(argName, arg.validate(positionalArguments.get(count)));
-                count++;
-            }
-        }
-    }
-
-    private void handlePos(List<String> positionalArguments) throws Exception {
-        int count = 0;
-        for(Map.Entry<String, Argument> argument : arguments.entrySet()){
-            String argName = argument.getKey();
-            Argument arg = argument.getValue();
-            values.put(argName, arg.validate(positionalArguments.get(count)));
-            count++;
-        }
-        if(count != positionalArguments.size()){
-            throw new IllegalArgumentException("Incorrect number of arguments (not PosArg)"); // TODO Change the error message later
-        }
+    public Map<String, Object> getParsedCommandArguments(String command) {
+        return getCommandFromMap(command).getParsedArguments();
     }
 
     public void parseArgs(String input) throws Exception {
-
-        Iterable<String> tokens = Splitter.on(' ')
+        //Tokenizes
+        List<String> tokens = new ArrayList<>();
+        for (String token : Splitter.on(' ')
                 .trimResults()
                 .omitEmptyStrings()
-                .split(input);
-
-        boolean isFirstToken = true;
-        String command = null;
-        List<String> flags = new ArrayList<>();
-        List<String> positionalArguments = new ArrayList<>();
-
-        //
-        // TODO Scenarios.java's parse method removes the first token for us which is usually the root command ('git', 'cd', 'mv', etc.) so we don't have to check for it
-        //
-        for (String token : tokens) {
-//            if (isFirstToken) {
-//                command = token;
-//                isFirstToken = false;
-//            } else
-                if (token.startsWith("--")) {
-                flags.add(token);
-            } else {
-                positionalArguments.add(token);
-            }
+                .split(input)) {
+            tokens.add(token);
         }
 
-        // Process flags
-        if(!flags.isEmpty()){
-            handleFlag(flags, positionalArguments);
+        // Validate Identifier
+        if(!(Objects.equals(tokens.getFirst(), identifier))) {
+            throw new Exception("Incorrect Identifier in ArgumentParser");
         }
+        tokens.removeFirst();
 
-        //process positional
-        if(!positionalArguments.isEmpty()){
-            handlePos(positionalArguments);
+        if(!commands.isEmpty() && commands.containsKey(tokens.getFirst())) {
+            Command command = getCommandFromMap(tokens.getFirst());
+            command.parseArgs(tokens);
+        } else if (tokens.getFirst() == "-h" || tokens.getFirst() == "--help") {
+            printHelpMessage();
+        } else {
+            parse(tokens);
         }
-
     }
-
-    public <T> Object getArg(String name) {
-        Class<T> type = getArgument(name).type;
-        Object value = getValue(name);
-        return type.cast(value);
-    }
-
-
 }
+

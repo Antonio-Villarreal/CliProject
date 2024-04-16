@@ -1,67 +1,52 @@
 package oop.project.cli;
 
+import com.google.common.base.Splitter;
 import org.checkerframework.checker.units.qual.A;
 
-import java.util.Map;
-import java.util.LinkedHashMap;
+import java.util.*;
 
-public class Command {
-    String name;
-    String identifier;
-    String description;
+/**
+ * Represents a subcommand with user defined arguments.
+ *
+ * Example:
+ */
+public class Command extends Parser {
 
-    Map<String, Argument> arguments = new LinkedHashMap<>();
-    Map<String, Object> values = new LinkedHashMap<>();
-
-    private Command() {}
-
+    /* CONSTRUCTORS */
     public Command(String name, String identifier) {
-        this.name = name;
-        this.identifier = identifier;
-        this.description = null;
+        super(name, identifier);
     }
 
     public Command(String name, String identifier, String description) {
-        this.name = name;
-        this.identifier = identifier;
-        this.description = description;
+        super(name, identifier, description);
     }
 
-    public void addArgument(String name, Class<?> type) {
-        var newArgument = new Argument(name, type);
-        storeArgument(name, newArgument);
-    }
+    /* HELP MESSAGE */
 
-    public void updateArgumentHelpMsg(String name, String description) {
-        getArgument(name).setHelpMsg(description);
-    }
-
-    public void updateArgumentValidationFunc(String name, ValidationFunction<?> validationFunction) {
-        getArgument(name).setValidationFunc(validationFunction);
-    }
-
-    public void updateArgumentRequired(String name, Boolean required) {
-        getArgument(name).setRequired(required);
-    }
-
-    public Map<String, Object> getArgs() {
-        return values;
-    }
-
-    public Object getArg(String name) {
-        return getValue(name);
-    }
-
-    public void printCompactHelpMessage() {
+    /**
+     * Retrieves a message containing information about the command.
+     * <p>
+     * This method constructs a message containing details on all the arguments of the current Command object
+     * such as their name, type, and whether it is required. The message is formatted for display.
+     *
+     * @return A formatted message containing information about the command, consisting of its arguments' help messages.
+     */
+    public String getMessage() {
         StringBuilder msg = new StringBuilder();
         msg.append("\t").append(identifier).append("\t");
         for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
             Argument argument = entry.getValue();
-            msg.append(argument.printHelp());
+            msg.append(argument.getMessage());
         }
-        System.out.println(msg.toString());
+        return msg.toString();
     }
 
+    /**
+     * Prints all the arguments and commands of this command object.
+     * </p>
+     * The message is formatted and displays information about the command including its description, usage syntax,
+     * arguments, and optional arguments.
+     */
     public void printHelpMessage() {
         System.out.println(name);
         System.out.println();
@@ -74,7 +59,7 @@ public class Command {
         System.out.println("Arguments:");
         for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
             Argument argument = entry.getValue();
-            argument.printHelp();
+            System.out.println(argument.getMessage());
         }
         System.out.println();
         System.out.println();
@@ -82,33 +67,18 @@ public class Command {
         System.out.println("\t--help\tMSG: Show the help message.");
     }
 
-    private Argument getArgument(String name) {
-        if (arguments.containsKey(name)) {
-            throw new IllegalArgumentException("Argument with name '" + name + "' not found.");
+    /* PARSING METHODS */
+
+    protected void parseArgs(List<String> tokens) throws Exception {
+        if(!(Objects.equals(tokens.getFirst(), identifier))) {
+            throw new Exception("Incorrect Identifier in Command");
         }
-        return arguments.get(name);
-    }
+        tokens.removeFirst();
 
-    private Object getValue(String name) {
-        if (values.containsKey(name)) {
-            throw new IllegalArgumentException("Value with name '" + name + "' not found.");
+        if (Objects.equals(tokens.getFirst(), "-h") || Objects.equals(tokens.getFirst(), "--help")) {
+            printHelpMessage();
+        } else {
+            parse(tokens);
         }
-        return values.get(name);
     }
-
-    private void storeArgument(String name, Argument argument) {
-        if(arguments.containsKey(name)) {
-            throw new IllegalArgumentException("Argument with name '" + name + "' already exists.");
-        }
-        arguments.put(name, argument);
-    }
-
-    private void storeValue(String name, Object value) {
-        if(values.containsKey(name)) {
-            throw new IllegalArgumentException("Value with name '" + name + "' already exists.");
-        }
-        values.put(name, value);
-    }
-
-
 }
