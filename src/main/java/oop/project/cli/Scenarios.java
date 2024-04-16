@@ -91,8 +91,35 @@ public class Scenarios {
      */
 //    static Map<String, Object> calc(String arguments) throws Exception {
 //        //TODO: Parse arguments and extract values.
-//        String subcommand = "";
-//        return Map.of("subcommand", subcommand);
+//        ArgumentParser argparse = new ArgumentParser("Calculator", "calc", "Performs add, div, and sqrt.");
+//
+//        Command addCommand = new Command("Addition", "add");
+//        addCommand.addArgument(new Argument.Builder<>("left", Integer.class)
+//                .required(Boolean.TRUE)
+//                .build());
+//        addCommand.addArgument(new Argument.Builder<>("right", Integer.class)
+//                .required(Boolean.TRUE)
+//                .build());
+//        argparse.addCommand(addCommand);
+//
+//        Command divCommand = new Command("Division", "div");
+//        divCommand.addArgument(new Argument.Builder<>("numerator", Float.class)
+//                .required(Boolean.FALSE)
+//                .build());
+//        divCommand.addArgument(new Argument.Builder<>("denominator", Float.class)
+//                .required(Boolean.TRUE)
+//                .build());
+//        argparse.addCommand(divCommand);
+//
+//        Command sqrtCommand = new Command("Square Root", "sqrt");
+//        ValidationFunction<Integer> nonNegativeValidator = value -> value >= 0;
+//        sqrtCommand.addArgument(new Argument.Builder<>("number", Integer.class)
+//                .required(Boolean.TRUE)
+//                .validationFunction(nonNegativeValidator)
+//                .build());
+//        argparse.addCommand(sqrtCommand);
+//        // GET SUBCOMMAND
+//        //return Map.of("subcommand", subcommand);
 //    }
 
     /**
