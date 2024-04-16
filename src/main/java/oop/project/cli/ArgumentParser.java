@@ -4,10 +4,7 @@ import org.checkerframework.checker.units.qual.A;
 import org.checkerframework.checker.units.qual.C;
 import com.google.common.base.Splitter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 public class ArgumentParser extends Parser {
     //Storage
@@ -26,7 +23,7 @@ public class ArgumentParser extends Parser {
     /* COMMAND METHOD */
 
     public void addCommand(Command command) {
-        storeCommandInMap(command.name(), command);
+        storeCommandInMap(command.identifier(), command);
     }
 
     /* MAP STORAGE METHODS */
@@ -74,5 +71,39 @@ public class ArgumentParser extends Parser {
         System.out.println();
         System.out.println("Optional Arguments:");
         System.out.println("\t--help\tMSG: Show the help message.");
+    }
+
+    public Object getParsedCommandArgument(String command, String name) {
+        return getCommandFromMap(command).getParsedArgument(name);
+    }
+
+    public Map<String, Object> getParsedCommandArguments(String command) {
+        return getCommandFromMap(command).getParsedArguments();
+    }
+
+    public void parseArgs(String input) throws Exception {
+        //Tokenizes
+        List<String> tokens = new ArrayList<>();
+        for (String token : Splitter.on(' ')
+                .trimResults()
+                .omitEmptyStrings()
+                .split(input)) {
+            tokens.add(token);
+        }
+
+        // Validate Identifier
+        if(!(Objects.equals(tokens.getFirst(), identifier))) {
+            throw new Exception("Incorrect Identifier in ArgumentParser");
+        }
+        tokens.removeFirst();
+
+        if(!commands.isEmpty() && commands.containsKey(tokens.getFirst())) {
+            Command command = getCommandFromMap(tokens.getFirst());
+            command.parseArgs(tokens);
+        } else if (tokens.getFirst() == "-h" || tokens.getFirst() == "--help") {
+            printHelpMessage();
+        } else {
+            parse(tokens);
+        }
     }
 }

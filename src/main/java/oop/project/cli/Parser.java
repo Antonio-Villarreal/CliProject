@@ -40,6 +40,8 @@ public abstract class Parser {
 
     public String name() { return name; }
 
+    public String identifier() { return identifier; }
+
     /* ARGUMENT METHOD */
 
     public void addArgument(Argument argument) {
@@ -85,82 +87,86 @@ public abstract class Parser {
     }
 
     public Map<String, Object> getParsedArguments() {
+        System.out.println(values);
         Map<String, Object> parsedArgs = values.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().orElse(null)));
+                .filter(entry -> entry.getValue().isPresent()) // Filter out entries with Optional.empty()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().get()));
+
         return parsedArgs;
     }
 
-    public void parseArgs(String input) throws Exception {
-        Iterable<String> tokens = Splitter.on(' ')
-                .trimResults()
-                .omitEmptyStrings()
-                .split(input);
-
-        boolean isFirstToken = true;
-        String command = null;
-        List<String> flags = new ArrayList<>();
-        List<String> positionalArguments = new ArrayList<>();
-
-        //
-        // TODO Scenarios.java's parse method removes the first token for us which is usually the root command ('git', 'cd', 'mv', etc.) so we don't have to check for it
-        //
-        for (String token : tokens) {
-//            if (isFirstToken) {
-//                command = token;
-//                isFirstToken = false;
-//            } else
-            if (token.startsWith("--")) {
-                flags.add(token);
-            } else {
-                positionalArguments.add(token);
-            }
+    private void flagged(List<String> tokens) throws Exception {
+        if(tokens.size() % 2 != 0) {
+            throw new ParseException("Unexpected Arguments");
         }
 
-        // Process flags
-        if(!flags.isEmpty()){
-            handleFlagged(flags, positionalArguments);
-        }
+        Integer nameIndex = 0;
+        Integer valueIndex = 1;
+        for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
+            String name = entry.getKey();
+            Argument argument = entry.getValue();
 
-        //process positional
-        if(!positionalArguments.isEmpty()){
-            handlePositional(positionalArguments);
-        }
-
-    }
-
-    private void handleFlagged(List<String> flags, List<String> positionalArguments) throws Exception {
-        // Check the exception
-        if(flags.size() != positionalArguments.size()){
-            throw new IllegalArgumentException("Flags number should match with Arguments number"); //TODO Change the error message later
-        }
-
-        // Validate flags and positional arguments
-        int count = 0;
-        for( Map.Entry<String, Argument> argument : arguments.entrySet()){
-            String argName = argument.getKey();
-            Argument arg = argument.getValue();
-            if(arg.required()){
-                if(!argName.equals(flags.get(count).substring(2))) {
-                    throw new Exception("Missing required argument.");
+            if (nameIndex >= tokens.size() || valueIndex >= tokens.size()) {
+                if(argument.required() == Boolean.TRUE) {
+                    throw new ParseException("Missing Required Argument -> " + name);
                 }
+                continue;
             }
-            if(argName.equals(flags.get(count).substring(2))){
-                storeValueInMap(argName, arg.validate(positionalArguments.get(count)));
-                count++;
+
+            String tokenName = tokens.get(nameIndex).replace("--", "");
+            String tokenValue = tokens.get(valueIndex);
+
+            if (!arguments.containsKey(tokenName)) {
+                throw new ParseException("Argument does not exist -> " + tokenName);
+            } else if (Objects.equals(name, tokenName)) {
+                // Validate and Store
+                storeValueInMap(name, argument.validate(tokenValue));
+                // Increase ptrs
+                nameIndex = nameIndex + 2;
+                valueIndex = valueIndex + 2;
+            } else if (argument.required()) {
+                throw new ParseException("Missing Required Argument -> " + name);
             }
         }
     }
 
-    private void handlePositional(List<String> positionalArguments) throws Exception {
-        int count = 0;
-        for(Map.Entry<String, Argument> argument : arguments.entrySet()){
-            String argName = argument.getKey();
-            Argument arg = argument.getValue();
-            storeValueInMap(argName, arg.validate(positionalArguments.get(count)));
-            count++;
+
+    private void positional(List<String> tokens) throws Exception {
+        System.out.println("here");
+        System.out.println(tokens);
+        System.out.println(arguments);
+        if (tokens.size() != arguments.size()) {
+            throw new ParseException("Mismatch between number of expected arguments and given arguments.");
         }
-        if(count != positionalArguments.size()){
-            throw new IllegalArgumentException("Incorrect number of arguments (not PosArg)"); // TODO Change the error message later
+
+        Integer valueIndex = 0;
+        for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
+            if (valueIndex >= tokens.size()) {
+                break;
+            }
+
+            String name = entry.getKey();
+            Argument argument = entry.getValue();
+
+            String tokenValue = tokens.get(valueIndex);
+
+            storeValueInMap(name, argument.validate(tokenValue));
+            valueIndex++;
         }
+    }
+
+
+    public void parse(List<String> tokens) throws Exception {
+        Boolean flagged = Boolean.FALSE;
+        if(tokens.getFirst().contains("--")) {
+            flagged = Boolean.TRUE;
+        }
+
+        if(flagged) {
+            flagged(tokens);
+        } else {
+            positional(tokens);
+        }
+
     }
 }

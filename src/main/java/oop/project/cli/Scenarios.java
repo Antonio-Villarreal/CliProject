@@ -17,15 +17,16 @@ public class Scenarios {
         //e.g. `command [arguments...]`. If your project uses a different
         //structure, e.g. Lisp syntax like `(command [arguments...])`, you may
         //need to adjust this a bit to work as expected.
+        System.out.println(command);
         var split = command.split(" ", 2);
         var base = split[0];
-        var arguments = split.length == 2 ? split[1] : "";
+        //var arguments = split.length == 2 ? split[1] : "";
         return switch (base) {
-            case "add" -> add(arguments);
-            case "sub" -> sub(arguments);
-            case "sqrt" -> sqrt(arguments);
-//            case "calc" -> calc(arguments);
-            case "date" -> date(arguments);
+            case "add" -> add(command);
+            case "sub" -> sub(command);
+            case "sqrt" -> sqrt(command);
+            case "calc" -> calc(command);
+            case "date" -> date(command);
             default -> throw new IllegalArgumentException("Unknown command.");
         };
     }
@@ -89,38 +90,47 @@ public class Scenarios {
      *     - Note: Not all projects support subcommands, but if yours does you
      *       may want to take advantage of this scenario for that.
      */
-//    static Map<String, Object> calc(String arguments) throws Exception {
-//        //TODO: Parse arguments and extract values.
-//        ArgumentParser argparse = new ArgumentParser("Calculator", "calc", "Performs add, div, and sqrt.");
-//
-//        Command addCommand = new Command("Addition", "add");
-//        addCommand.addArgument(new Argument.Builder<>("left", Integer.class)
-//                .required(Boolean.TRUE)
-//                .build());
-//        addCommand.addArgument(new Argument.Builder<>("right", Integer.class)
-//                .required(Boolean.TRUE)
-//                .build());
-//        argparse.addCommand(addCommand);
-//
-//        Command divCommand = new Command("Division", "div");
-//        divCommand.addArgument(new Argument.Builder<>("numerator", Float.class)
-//                .required(Boolean.FALSE)
-//                .build());
-//        divCommand.addArgument(new Argument.Builder<>("denominator", Float.class)
-//                .required(Boolean.TRUE)
-//                .build());
-//        argparse.addCommand(divCommand);
-//
-//        Command sqrtCommand = new Command("Square Root", "sqrt");
-//        ValidationFunction<Integer> nonNegativeValidator = value -> value >= 0;
-//        sqrtCommand.addArgument(new Argument.Builder<>("number", Integer.class)
-//                .required(Boolean.TRUE)
-//                .validationFunction(nonNegativeValidator)
-//                .build());
-//        argparse.addCommand(sqrtCommand);
-//        // GET SUBCOMMAND
-//        //return Map.of("subcommand", subcommand);
-//    }
+    static Map<String, Object> calc(String arguments) throws Exception {
+        //TODO: Parse arguments and extract values.
+        ArgumentParser argparse = new ArgumentParser("Calculator", "calc", "Performs add, div, and sqrt.");
+
+        Command addCommand = new Command("Addition", "add");
+        addCommand.addArgument(new Argument.Builder<>("left", Integer.class)
+                .required(Boolean.TRUE)
+                .build());
+        addCommand.addArgument(new Argument.Builder<>("right", Integer.class)
+                .required(Boolean.TRUE)
+                .build());
+        argparse.addCommand(addCommand);
+
+        Command divCommand = new Command("Division", "div");
+        divCommand.addArgument(new Argument.Builder<>("numerator", Double.class)
+                .required(Boolean.FALSE)
+                .build());
+        divCommand.addArgument(new Argument.Builder<>("denominator", Double.class)
+                .required(Boolean.TRUE)
+                .build());
+        argparse.addCommand(divCommand);
+
+        Command sqrtCommand = new Command("Square Root", "sqrt");
+        ValidationFunction<Integer> nonNegativeValidator = value -> value >= 0;
+        sqrtCommand.addArgument(new Argument.Builder<>("number", Integer.class)
+                .required(Boolean.TRUE)
+                .validationFunction(nonNegativeValidator)
+                .build());
+        argparse.addCommand(sqrtCommand);
+        argparse.parseArgs(arguments);
+
+        if(arguments.contains("div"))
+            return argparse.getParsedCommandArguments("div");
+        else if (arguments.contains("sqrt")) {
+            return argparse.getParsedCommandArguments("sqrt");
+        } else if (arguments.contains("add"))
+            return argparse.getParsedCommandArguments("add");
+        else {
+            throw new Exception();
+        }
+    }
 
     /**
      * Takes one positional argument:
@@ -136,6 +146,7 @@ public class Scenarios {
                 .required(Boolean.TRUE)
                 .customTypeConversionMethod("parse")
                 .build());
+        System.out.println(arguments);
         argparse.parseArgs(arguments);
         return argparse.getParsedArguments();
     }
