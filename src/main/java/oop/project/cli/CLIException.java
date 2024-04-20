@@ -1,5 +1,8 @@
 package oop.project.cli;
 
+/**
+ * This class handles custom exceptions
+ */
 public class CLIException extends Exception {
     public CLIException(String message) {
         super(message);
